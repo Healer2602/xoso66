@@ -73,6 +73,9 @@ nav.rank-math-breadcrumb {
   padding: 0px;
   border-radius: 5px;
 }
+nav.rank-math-breadcrumb p {
+  padding: 10px;
+}
 
 nav.rank-math-breadcrumb .last {
   padding: 10px;
@@ -125,4 +128,70 @@ h2.title-kqxs {
 }
 .border-right {
   border-right: 1px solid #dee2e6 !important;
+}
+
+.nav-column li > a,
+.nav-dropdown > li > a {
+  padding: 5px 20px;
+  font-size: 14px;
+  color: #000 !important;
+}
+
+.nav-dropdown-has-border .nav-dropdown {
+  border: unset;
+}
+
+.nav-dropdown-default {
+  padding: 5px;
+}
+
+.sub-menu .menu-item:hover {
+  background-color: #8fd9d021;
+}
+td.color333 {
+  background-color: #ffeeba !important;
+}
+td.chu17.need_blank {
+  text-align: center;
+}
+.table > :not(:last-child) > :last-child > * {
+  border-bottom-color: currentColor;
+  font-weight: 700;
+  color: #000;
+  font-size: 17px;
+  background-color: #bee5eb;
+  text-align: center;
+}
+th:first-child,
+td:first-child {
+  padding-left: 0;
+  text-align: center;
+}
+td.dosam {
+  color: #dc3545;
+}
+th:last-child,
+td:last-child {
+  padding-right: 0;
+  color: #000;
+}
+.table-bordered tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.bkqtinhmienbac_mini td {
+  height: 50px !important;
+}
+.bkqtinhmienbac_mini tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.box_kqxs_mini .title {
+  font-size: 24px !important;
+}
+span.d-none.d-lg-block {
+  font-size: 16px;
+  font-weight: 700;
+}
+td.font-weight-bold {
+  text-align: center;
+  font-size: 18px;
 }

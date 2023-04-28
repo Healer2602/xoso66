@@ -1,3 +1,89 @@
+<?php
+
+$now = date("Y-m-d");
+$now_date = str_replace("-", "", $now);
+$yesterday = date("Y-m-d", strtotime("-1 day", strtotime($now))); // Trừ đi 1 ngày
+$y_date = str_replace("-", "", $yesterday);
+// echo "Thời gian hiện tại là: " . $y_date;
+
+$arr_xshn = ["hnc", "bnc", "hfc", "gnic", "tpc"];
+
+// function xử lý api
+function getAPIXSMB($arr)
+{
+    $now = date("Y-m-d");
+    $now_date = str_replace("-", "", $now);
+    $yesterday = date("Y-m-d", strtotime("-1 day", strtotime($now))); // Trừ đi 1 ngày
+    $y_date = str_replace("-", "", $yesterday);
+    $result = [];
+    foreach ($arr as $value) {
+        $url = "http://vip.manycai.com/K2643675f3854be/";
+        $url .= $value;
+        $url .= ".json/?issue=";
+        $url .= $y_date;
+        $curl = curl_init(); // Khởi tạo một đối tượng curl
+
+        curl_setopt($curl, CURLOPT_URL, $url); // Thiết lập URL của API
+
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // Thiết lập trả về dữ liệu dưới dạng chuỗi
+
+        $response = curl_exec($curl); // Gửi yêu cầu và nhận phản hồi từ API
+
+        curl_close($curl);
+
+        // Xử lý phản hồi từ API
+        try {
+            $data = json_decode($response, true);
+            if (!$data["error"]) {
+                foreach ($data as $key => $dt) {
+                    $result = $dt;
+                    return $result;
+                }
+            }
+        } catch (\Throwable $e) {
+            throw $e;
+        }
+    }
+}
+
+function subString($string)
+{
+    $result = substr(str_replace(",", "", $string), -2);
+    return $result;
+}
+
+$dt_xsmb = getAPIXSMB($arr_xshn);
+
+$arr_live = array();
+array_push($arr_live, subString($dt_xsmb["code"]["code"]));
+array_push($arr_live, subString($dt_xsmb["code"]["code1"]));
+foreach ($dt_xsmb["code"]["code2"] as $key => $value) {
+    array_push($arr_live, subString($value));
+}
+foreach ($dt_xsmb["code"]["code3"] as $key => $value) {
+    array_push($arr_live, subString($value));
+}
+
+foreach ($dt_xsmb["code"]["code4"] as $key => $value) {
+    array_push($arr_live, subString($value));
+}
+
+foreach ($dt_xsmb["code"]["code5"] as $key => $value) {
+    array_push($arr_live, subString($value));
+}
+
+foreach ($dt_xsmb["code"]["code6"] as $key => $value) {
+    array_push($arr_live, subString($value));
+}
+
+foreach ($dt_xsmb["code"]["code7"] as $key => $value) {
+    array_push($arr_live, str_replace(",", "", $value));
+}
+// array_push($arr, subString($dt_xsmb["code"]["code"]));
+sort($arr_live);
+
+?>
+
 <div class="col-md-6 result-kqxs">
     <?php if (function_exists('rank_math_the_breadcrumbs')) rank_math_the_breadcrumbs(); ?>
     <div class="btn-group justify-center" style="width:100%;">
@@ -18,40 +104,27 @@
                         <thead>
                             <tr class="title_row">
                                 <td class="color333" colspan="2">
-                                    <div class="col-sm-10">
-                                        <a href="/in-truyen-thong.php?ngay=12-04-2023" target="_blank"><button
-                                                class="btn btn-lg button-noborder col-sm-1 pull-left hidden-print"><span
-                                                    class="lyphicon glyphicon glyphicon-print"></span></button></a>
+                                    <div class="col-sm-12">
                                         <h2 class="text-uppercase title-kqxs fs-2 text-center">Xổ số
-                                            Truyền
-                                            Thống</h2>
-                                    </div>
-                                    <div class="col-sm-10 text-center">
-                                        <span id="result_date">Thứ tư ngày 12-04-2023</span>
-
+                                            Hà Nội</h2>
+                                        <span>
+                                            Ngày
+                                            <?php echo $dt_xsmb["opendate"] ?>
+                                        </span>
                                     </div>
                                 </td>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="table-title hover">Ký tự</td>
-                                <td style="padding: 0;" class="hover">
-                                    <div class="row-no-gutters text-center">
-                                        <div id="rs_8_0" style="width:100%; position: relative; float: left;"
-                                            class="phoi-size chu18 gray need_blank hover" rs_len="4"
-                                            data-pattern="[0-9]{1,2}[A-Z]{2}" data-sofar="15QS-6QS-8QS-1QS-5QS-7QS"
-                                            data-rolling-special="1" data-group-count="6">15QS-6QS-8QS-1QS-5QS-7QS</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
                                 <td class="table-title hover table-text-special">Đặc
                                     biệt</td>
                                 <td style="padding: 0;" class="">
                                     <div class="row-no-gutters text-center">
                                         <div class="result-special">
-                                            37195
+                                            <?php
+                                            echo str_replace(",", "", $dt_xsmb["code"]["code"]);
+                                            ?>
                                         </div>
                                     </div>
                                 </td>
@@ -61,8 +134,11 @@
                                 <td style="padding: 0;" class="">
                                     <div class="row-no-gutters text-center">
                                         <div id="rs_1_0" style="width:100%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam hover" rs_len="5"
-                                            data-pattern="[0-9]{5}" data-sofar="88982">88982</div>
+                                            class="phoi-size chu22 gray need_blank vietdam hover">
+                                            <?php
+                                            echo str_replace(",", "", $dt_xsmb["code"]["code1"]);
+                                            ?>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -70,12 +146,12 @@
                                 <td class="table-title hover">Giải nhì</td>
                                 <td style="padding: 0;" class="">
                                     <div class="row-no-gutters text-center">
+                                        <?php foreach ($dt_xsmb["code"]["code2"] as $key => $value) : ?>
                                         <div id="rs_2_0" style="width:50%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="5" data-pattern="[0-9]{5}" data-sofar="91410">91410</div>
-                                        <div id="rs_2_1" style="width:50%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam hover" rs_len="5"
-                                            data-pattern="[0-9]{5}" data-sofar="39454">39454</div>
+                                            class="phoi-size chu22 gray need_blank vietdam border-right hover">
+                                            <?php echo str_replace(",", "", $value); ?>
+                                        </div>
+                                        <?php endforeach ?>
                                     </div>
                                 </td>
                             </tr>
@@ -83,30 +159,13 @@
                                 <td class="table-title hover">Giải ba</td>
                                 <td style="padding: 0;" class="">
                                     <div class="row-no-gutters text-center">
+                                        <?php foreach ($dt_xsmb["code"]["code3"] as $key => $value) : ?>
                                         <div id="rs_3_0"
                                             style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-bottom border-right hover"
-                                            rs_len="5" data-pattern="[0-9]{5}" data-sofar="68319">68319</div>
-                                        <div id="rs_3_1"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-bottom border-right hover"
-                                            rs_len="5" data-pattern="[0-9]{5}" data-sofar="52423">52423</div>
-                                        <div id="rs_3_2"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-bottom hover"
-                                            rs_len="5" data-pattern="[0-9]{5}" data-sofar="13233">13233</div>
-                                        <div id="rs_3_3"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="5" data-pattern="[0-9]{5}" data-sofar="68277">68277</div>
-                                        <div id="rs_3_4"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="5" data-pattern="[0-9]{5}" data-sofar="21169">21169</div>
-                                        <div id="rs_3_5"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam hover" rs_len="5"
-                                            data-pattern="[0-9]{5}" data-sofar="30216">30216</div>
+                                            class="phoi-size chu22 gray need_blank vietdam border-bottom border-right hover">
+                                            <?php echo str_replace(",", "", $value); ?>
+                                        </div>
+                                        <?php endforeach ?>
                                     </div>
                                 </td>
                             </tr>
@@ -115,18 +174,12 @@
                                     Giải tư</td>
                                 <td style="padding: 0;" class="">
                                     <div class="row-no-gutters text-center">
+                                        <?php foreach ($dt_xsmb["code"]["code4"] as $key => $value) : ?>
                                         <div id="rs_4_0" style="width:25%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="4" data-pattern="[0-9]{4}" data-sofar="0142">0142</div>
-                                        <div id="rs_4_1" style="width:25%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="4" data-pattern="[0-9]{4}" data-sofar="3462">3462</div>
-                                        <div id="rs_4_2" style="width:25%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="4" data-pattern="[0-9]{4}" data-sofar="5629">5629</div>
-                                        <div id="rs_4_3" style="width:25%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam hover" rs_len="4"
-                                            data-pattern="[0-9]{4}" data-sofar="2596">2596</div>
+                                            class="phoi-size chu22 gray need_blank vietdam border-right hover">
+                                            <?php echo str_replace(",", "", $value); ?>
+                                        </div>
+                                        <?php endforeach ?>
                                     </div>
                                 </td>
                             </tr>
@@ -135,30 +188,13 @@
                                     Giải năm</td>
                                 <td style="padding: 0;" class="">
                                     <div class="row-no-gutters text-center">
+                                        <?php foreach ($dt_xsmb["code"]["code5"] as $key => $value) : ?>
                                         <div id="rs_5_0"
                                             style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-bottom border-right hover"
-                                            rs_len="4" data-pattern="[0-9]{4}" data-sofar="5756">5756</div>
-                                        <div id="rs_5_1"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-bottom border-right hover"
-                                            rs_len="4" data-pattern="[0-9]{4}" data-sofar="9121">9121</div>
-                                        <div id="rs_5_2"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-bottom hover"
-                                            rs_len="4" data-pattern="[0-9]{4}" data-sofar="6244">6244</div>
-                                        <div id="rs_5_3"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="4" data-pattern="[0-9]{4}" data-sofar="8253">8253</div>
-                                        <div id="rs_5_4"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="4" data-pattern="[0-9]{4}" data-sofar="6810">6810</div>
-                                        <div id="rs_5_5"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam hover" rs_len="4"
-                                            data-pattern="[0-9]{4}" data-sofar="3857">3857</div>
+                                            class="phoi-size chu22 gray need_blank vietdam border-bottom border-right hover">
+                                            <?php echo str_replace(",", "", $value); ?>
+                                        </div>
+                                        <?php endforeach ?>
                                     </div>
                                 </td>
                             </tr>
@@ -166,18 +202,13 @@
                                 <td class="table-title hover">Giải sáu</td>
                                 <td style="padding: 0;" class="">
                                     <div class="row-no-gutters text-center">
+                                        <?php foreach ($dt_xsmb["code"]["code6"] as $key => $value) : ?>
                                         <div id="rs_6_0"
                                             style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="3" data-pattern="[0-9]{3}" data-sofar="309">309</div>
-                                        <div id="rs_6_1"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="3" data-pattern="[0-9]{3}" data-sofar="404">404</div>
-                                        <div id="rs_6_2"
-                                            style="width:33.333333333333%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam hover" rs_len="3"
-                                            data-pattern="[0-9]{3}" data-sofar="166">166</div>
+                                            class="phoi-size chu22 gray need_blank vietdam border-right hover">
+                                            <?php echo str_replace(",", "", $value); ?>
+                                        </div>
+                                        <?php endforeach ?>
                                     </div>
                                 </td>
                             </tr>
@@ -185,18 +216,12 @@
                                 <td class="table-title hover">Giải bảy</td>
                                 <td style="padding: 0;" class="">
                                     <div class="row-no-gutters text-center">
+                                        <?php foreach ($dt_xsmb["code"]["code7"] as $key => $value) : ?>
                                         <div id="rs_7_0" style="width:25%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="2" data-pattern="[0-9]{2}" data-sofar="97">97</div>
-                                        <div id="rs_7_1" style="width:25%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="2" data-pattern="[0-9]{2}" data-sofar="54">54</div>
-                                        <div id="rs_7_2" style="width:25%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam border-right hover"
-                                            rs_len="2" data-pattern="[0-9]{2}" data-sofar="39">39</div>
-                                        <div id="rs_7_3" style="width:25%; position: relative; float: left;"
-                                            class="phoi-size chu22 gray need_blank vietdam hover" rs_len="2"
-                                            data-pattern="[0-9]{2}" data-sofar="28">28</div>
+                                            class="phoi-size chu22 gray need_blank vietdam border-right hover">
+                                            <?php echo str_replace(",", "", $value);  ?>
+                                        </div>
+                                        <?php endforeach ?>
                                     </div>
                                 </td>
                             </tr>
@@ -222,11 +247,11 @@
                         <a href="/so-ket-qua-truyen-thong" class="btn btn-default btn-primary" role="button">Xem sổ kết
                             quả 30 ngày</a>
                         <a href="/so-ket-qua-truyen-thong/60" class="btn btn-default btn-info" role="button"
-                            style="flex: 1;">60 ngày</a><a href="/so-ket-qua-truyen-thong/90"
-                            class="btn btn-default btn-info" role="button" style="flex: 1;">90 ngày</a><a
+                            style="flex: 1;">60 </a><a href="/so-ket-qua-truyen-thong/90"
+                            class="btn btn-default btn-info" role="button" style="flex: 1;">90 </a><a
                             href="/so-ket-qua-truyen-thong/200" class="btn btn-default btn-info" role="button"
-                            style="flex: 1;">200 ngày</a><a href="/so-ket-qua-truyen-thong/300"
-                            class="btn btn-default btn-info" role="button" style="flex: 1;">300 ngày</a>
+                            style="flex: 1;">200 </a><a href="/so-ket-qua-truyen-thong/300"
+                            class="btn btn-default btn-info" role="button" style="flex: 1;">300 </a>
                     </div>
                 </div>
                 <div class="hidden-print">
@@ -265,38 +290,39 @@
                     </thead>
                     <tbody style="font-weight:bold;">
                         <tr>
-                            <td class="chu17 need_blank">04</td>
-                            <td class="chu17 need_blank">09</td>
-                            <td class="chu17 need_blank">10</td>
-                            <td class="chu17 need_blank">10</td>
-                            <td class="chu17 need_blank">16</td>
-                            <td class="chu17 need_blank">19</td>
-                            <td class="chu17 need_blank">21</td>
-                            <td class="chu17 need_blank">23</td>
-                            <td class="chu17 need_blank">28</td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[0] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[1] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[2] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[3] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[4] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[5] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[6] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[7] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[8] ?></td>
                         </tr>
                         <tr>
-                            <td class="chu17 need_blank">29</td>
-                            <td class="chu17 need_blank">33</td>
-                            <td class="chu17 need_blank">39</td>
-                            <td class="chu17 need_blank">42</td>
-                            <td class="chu17 need_blank">44</td>
-                            <td class="chu17 need_blank">53</td>
-                            <td class="chu17 need_blank">54</td>
-                            <td class="chu17 need_blank">54</td>
-                            <td class="chu17 need_blank">56</td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[9] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[10] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[11] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[12] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[13] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[14] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[15] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[16] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[17] ?></td>
                         </tr>
                         <tr>
-                            <td class="chu17 need_blank">57</td>
-                            <td class="chu17 need_blank">62</td>
-                            <td class="chu17 need_blank">66</td>
-                            <td class="chu17 need_blank">69</td>
-                            <td class="chu17 need_blank">77</td>
-                            <td class="chu17 need_blank">82</td>
-                            <td class="chu17 vietdam maudo lodb need_blank">95</td>
-                            <td class="chu17 need_blank">96</td>
-                            <td class="chu17 need_blank">97</td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[18] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[19] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[20] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[21] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[22] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[23] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[24] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[25] ?></td>
+                            <td class="chu17 need_blank"><?php echo $arr_live[26] ?></td>
                         </tr>
+
                     </tbody>
                 </table>
                 <div class="hidden-print"><a rel="nofollow" href="https://fabet.live/khuyen-mai/?a=9bd409e6e7dd52b6ece6a0baafed25f4&amp;utm_campaign=cpd&amp;utm_source=ketqua1net&amp;utm_medium=center7-538x60&amp;utm_content=sport
